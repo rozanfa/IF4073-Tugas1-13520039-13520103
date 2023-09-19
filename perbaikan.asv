@@ -1,12 +1,10 @@
 
 
 a = imread('Lena512warna.bmp');
-imshow(a);
-
 b = negative(a);
 
 
-% 
+% imshow(a);
 % figure; imshow(b);
 % 
 % c = brightening(a, 2, 10);
@@ -21,7 +19,6 @@ b = negative(a);
 
 f = contrast_stretch(a);
 figure; imshow(f);
-show_hist(f);
 
 function res = negative(im)
     res = 255 * ones(size(im), "uint8") - im;
@@ -40,19 +37,20 @@ function res = power_transform(r, c, g)
 end
 
 function res = contrast_stretch(r)
-    image_histograms = get_histogram_maps(r);
+    image_histogram = get_histogram_map(r);
     image_size = get_image_size(r);
     res = zeros(image_size);
     disp(size(r));
     disp(image_size);
     for i = 1:image_size(3)
-        disp("size(image_histograms(1))");
-        disp(size(image_histograms(1)));
-        max_val = get_max_pixel_values(image_histograms(i, :));
-        min_val = get_min_pixel_values(image_histograms(i, :));
-        res(:, :, i) = (r(:, :, i) - min_val) .* (255/(max_val - min_val));
+        max_val = get_min_pixel_values(image);
+        min_val = min(image_histogram(i));
+        aaa = r - min_val;
+        bbb = 255/(max_val - min_val);
+        disp(size(max_val));
+        disp(size(min_val));
+        res(i) = (r - min_val) .* (255/(max_val - min_val));
     end
-    res = uint8(res);
 end
 
 function image_size = get_image_size(image)
@@ -72,7 +70,7 @@ function min_val = get_min_pixel_values(histogram_map)
 end
 
 function max_val = get_max_pixel_values(histogram_map)
-    for i = 256:-1:1
+    for i = 256:1
         if histogram_map(i) ~= 0
             max_val = i;
             break
@@ -80,20 +78,14 @@ function max_val = get_max_pixel_values(histogram_map)
     end
 end
 
-function show_hist(image)
-    hists = get_histogram_maps(image);
-    for i = 1:size(hists)
-        figure; bar(hists(i, :))
-    end
-end
-
-function histogram_map = get_histogram_maps(image)
+function histogram_map = get_histogram_map(image)
     image_size = get_image_size(image);
-    histogram_map = zeros(image_size(3), 256, "uint32");
+    
+    histogram_map = zeros(image_size(1), 255, "uint8");
     for i = 1:image_size(1)
         for j = 1:image_size(2)
             for k = 1:image_size(3)
-                histogram_map(k, image(i, j, k) + 1) = histogram_map(k, image(i, j, k) + 1) + 1;
+                histogram_map(k, image(i, j, k)) = histogram_map(k, image(i, j, k)) + 1;
             end
         end
     end
