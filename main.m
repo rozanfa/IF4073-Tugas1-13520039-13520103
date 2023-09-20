@@ -1,6 +1,6 @@
 
 
-a = imread('1218545.png');
+a = imread('images/Lena512warna.bmp');
 figure(Name="Original")
 imshow(a);
 show_hist(a, "Original");
@@ -22,6 +22,10 @@ show_hist(a, "Original");
 f = contrast_stretch(a);
 figure(Name="Contrast Streched"); imshow(f);
 show_hist(f, "Contrast Streched");
+
+g = histogram_equalization(a);
+figure(Name="Histogram Equalized"); imshow(g);
+show_hist(g, "Histogram Equalized");
 
 function res = negative(im)
     res = 255 * ones(size(im), "uint8") - im;
@@ -47,6 +51,27 @@ function res = contrast_stretch(r)
         max_val = get_max_pixel_values(image_histograms(i, :)) - 1;
         min_val = get_min_pixel_values(image_histograms(i, :)) - 1;
         res(:, :, i) = (r(:, :, i) - min_val) .* (255/(max_val - min_val));
+    end
+    res = uint8(res);
+end
+
+function res = histogram_equalization(r)
+    r = double(r);
+    image_size = get_image_size(r);
+    value_count_map = zeros(image_size(3), 256, "uint32");
+    pixel_count = image_size(1) * image_size(2);
+    res = zeros(image_size);
+    for k = 1:image_size(3)
+        value_count_map(k, 1) = sum(sum(r(:,:,k) == 0));
+        for n = 1:255
+            value_count_map(k, n+1) = sum(sum(r(:,:,k) == n)) + value_count_map(k, n);
+        end
+    
+        for i = 1:image_size(1)
+            for j = 1:image_size(2)
+                res(i,j,k) = value_count_map(k, r(i,j,k)+1) * 255 / pixel_count;
+            end
+        end
     end
     res = uint8(res);
 end
@@ -96,5 +121,4 @@ function histogram_map = get_histogram_maps(image)
         end
     end
 end
-
 
