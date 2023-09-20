@@ -6,4 +6,4 @@
 
 Cara menjalankan
 
-- Jalankan file `pengcit.mlapp` pada folder `ui`
+- Jalankan file `pengcit.mlapp` pada folder `ui` menggunakan MATLAB
