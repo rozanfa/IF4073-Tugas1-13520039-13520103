@@ -49,7 +49,6 @@ function res = histogram_specification(r, args)
         
         % Create specification map
         for i = 1:256
-            disp(get_nearest_value(i, reference_equalization_map(k, :)));
             specification_map(k, i) = get_nearest_value(i-1, reference_equalization_map(k, :));
         end
         
