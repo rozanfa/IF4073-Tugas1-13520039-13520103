@@ -42,6 +42,10 @@ classdef EditableImage < handle
                     img = power_transform(img, args);
                 case 'contrast_stretching'
                     img = contrast_stretching(img);
+                case 'histogram_equalization'
+                    img = histogram_equalization(img);
+                case 'histogram_specification'
+                    img = histogram_specification(img, args);
                 otherwise
                     error('unsupported filter: %s', filterName);
             end
